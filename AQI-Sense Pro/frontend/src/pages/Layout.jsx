@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import StarField from './StarField';
 
-
-// --- ANIMATION VARIANTS ---
 const navVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -60,7 +58,6 @@ const mobileMenuVariants = {
   }
 };
 
-// --- LAYOUT COMPONENT ---
 const Layout = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -81,15 +78,12 @@ const Layout = () => {
   return (
     <div className="min-h-screen text-white relative overflow-hidden">
       
-      {/* Background Layers */}
       <div className="fixed inset-0 -z-40 bg-gradient-to-br from-black via-gray-950 to-emerald-950" />
       
-      {/* Star Field Background */}
       <div className="fixed inset-0 -z-30 overflow-hidden">
         <StarField />
       </div>
 
-      {/* Animated Grid Background */}
       <div className="fixed inset-0 -z-20 opacity-20">
         <motion.div 
           className="absolute inset-0" 
@@ -109,7 +103,6 @@ const Layout = () => {
         />
       </div>
 
-      {/* Aurora Glow */}
       <motion.div 
         className="fixed top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[60vh]
                       bg-gradient-radial from-emerald-500/10 via-transparent to-transparent
@@ -124,7 +117,6 @@ const Layout = () => {
         }}
       />
 
-      {/* Floating Animated Orbs */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <motion.div
           className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl"
@@ -167,14 +159,12 @@ const Layout = () => {
         />
       </div>
 
-      {/* Animated Noise Texture */}
       <div className="fixed inset-0 -z-1 opacity-[0.04] mix-blend-overlay" 
            style={{
              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-           }}>
-      </div>
+           }}
+      />
 
-      {/* Header */}
       <motion.header 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -183,7 +173,6 @@ const Layout = () => {
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo/Brand */}
             <motion.div 
               className="flex items-center space-x-4"
               whileHover={{ scale: 1.02 }}
@@ -194,11 +183,6 @@ const Layout = () => {
                   animate={{ 
                     rotate: [0, 5, -5, 0],
                     scale: [1, 1.1, 1],
-                    boxShadow: [
-                      "0 25px 50px -12px rgb(52 211 153 / 0.2)",
-                      "0 25px 60px -10px rgb(52 211 153 / 0.3)",
-                      "0 25px 50px -12px rgb(52 211 153 / 0.2)",
-                    ]
                   }}
                   transition={{ 
                     duration: 4,
@@ -227,21 +211,15 @@ const Layout = () => {
                       backgroundSize: '200% 200%',
                     }}
                   >
-                    AQI Sense
+                    AQI-Sense Pro
                   </motion.h1>
-                  <motion.p 
-                    className="text-sm text-gray-400"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
+                  <p className="text-sm text-gray-400">
                     AI Health Companion
-                  </motion.p>
+                  </p>
                 </div>
               </Link>
             </motion.div>
             
-            {/* Desktop Navigation */}
             <motion.nav 
               className="hidden md:flex space-x-8"
               variants={navVariants}
@@ -272,7 +250,6 @@ const Layout = () => {
               ))}
             </motion.nav>
 
-            {/* Mobile Menu Button */}
             <motion.button
               className="md:hidden text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors duration-200"
               whileHover={{ scale: 1.1 }}
@@ -290,7 +267,6 @@ const Layout = () => {
             </motion.button>
           </div>
 
-          {/* Mobile Navigation Menu */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
@@ -329,7 +305,6 @@ const Layout = () => {
         </div>
       </motion.header>
 
-      {/* Main Content */}
       <AnimatePresence mode="wait">
         <motion.main
           key={location.pathname}
@@ -343,7 +318,6 @@ const Layout = () => {
         </motion.main>
       </AnimatePresence>
 
-      {/* Footer */}
       <motion.footer 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

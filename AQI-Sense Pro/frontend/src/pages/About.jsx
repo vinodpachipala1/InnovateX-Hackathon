@@ -10,7 +10,7 @@ const About = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
       >
-        <h1 className="text-4xl font-bold mb-4">About AQI Sense</h1>
+        <h1 className="text-4xl font-bold mb-4">About AQI-Sense Pro</h1>
         <p className="text-xl text-gray-300">
           AI-powered air quality intelligence for healthier living
         </p>
@@ -26,7 +26,7 @@ const About = () => {
         >
           <h3 className="text-2xl font-semibold mb-4">Our Mission</h3>
           <p className="text-gray-300 leading-relaxed">
-            AQI Sense transforms raw air-quality data into personalized
+            AQI-Sense Pro transforms raw air-quality data into personalized
             health insights using AI. Our mission is to help individuals make
             better decisions, stay protected, and breathe safe in an increasingly
             polluted environment.
@@ -41,7 +41,7 @@ const About = () => {
         >
           <h3 className="text-2xl font-semibold mb-4">Hackathon Project</h3>
           <p className="text-gray-300 leading-relaxed">
-            Built in a 24-hour hackathon under the EnviroTech theme, AQI Sense
+            Built in a 24-hour hackathon under the EnviroTech theme, AQI-Sense Pro
             demonstrates the power of AI-driven environmental intelligence to
             safeguard communities and promote public health awareness.
           </p>
@@ -54,7 +54,7 @@ const About = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-dark-card rounded-xl px-6 py-8 border border-gray-800 mt-10 text-center"
       >
-        <h3 className="text-2xl font-semibold mb-4">Team Behind AQI Sense</h3>
+        <h3 className="text-2xl font-semibold mb-4">Team Behind AQI-Sense Pro</h3>
         <p className="text-gray-300 mb-4">Created by:</p>
         
         <div className="text-lg font-medium text-gray-200 space-y-1">

@@ -3,12 +3,10 @@ import aiService from '../services/aiService.js';
 import locationService from '../services/locationService.js';
 
 class AQIController {
-  // Enhanced: Get AQI data + AI health advice with location name
   async getAQIAdvice(req, res) {
     try {
       const { lat, lon, locationName, persona = 'general' } = req.body;
 
-      // Validate input - either coordinates or location name required
       if ((!lat || !lon) && !locationName) {
         return res.status(400).json({
           status: 'error',
@@ -16,7 +14,6 @@ class AQIController {
         });
       }
 
-      // Validate persona
       const validPersonas = ['general', 'athlete', 'children', 'sensitive'];
       if (!validPersonas.includes(persona)) {
         return res.status(400).json({
@@ -29,9 +26,7 @@ class AQIController {
       let finalLon = lon;
       let locationInfo = {};
 
-      // If location name provided, get coordinates first
       if (locationName && (!lat || !lon)) {
-        console.log(`📍 Converting location name to coordinates: ${locationName}`);
         const coords = await locationService.getCoordinatesFromName(locationName);
         finalLat = coords.lat;
         finalLon = coords.lon;
@@ -41,36 +36,44 @@ class AQIController {
           address: coords.address
         };
       } else {
-        // If coordinates provided, get location name
-        console.log(`📍 Getting location name for coordinates: ${finalLat}, ${finalLon}`);
-        const locationData = await locationService.getLocationNameFromCoords(finalLat, finalLon);
-        locationInfo = locationData;
+        const searchResults = await locationService._makeRequest('search.php', {
+          q: `${finalLat},${finalLon}`,
+          limit: 1,
+          addressdetails: 1
+        });
+        
+        if (searchResults && searchResults.length > 0) {
+          const result = searchResults[0];
+          locationInfo = {
+            name: result.display_name,
+            fullName: result.display_name,
+            address: result.address
+          };
+        } else {
+          const locationData = await locationService.getLocationNameFromCoords(finalLat, finalLon);
+          locationInfo = {
+            name: locationData.fullName,
+            fullName: locationData.fullName,
+            address: locationData.address
+          };
+        }
       }
 
-      console.log(`🧠 Fetching AQI + AI advice for: ${finalLat}, ${finalLon} (${persona}) - ${locationInfo.name}`);
-
-      // Fetch AQI data
       const [currentData, forecastData] = await Promise.all([
         weatherService.getCurrentAQI(finalLat, finalLon),
         weatherService.getAQIForecast(finalLat, finalLon)
       ]);
 
-      // Generate AI health advice - THIS WAS MISSING!
       const aiAdvice = await aiService.generateHealthAdvice({
         current: currentData,
         forecast: forecastData,
         location: { lat: finalLat, lon: finalLon, ...locationInfo }
       }, persona);
 
-      // Validate forecast data is array of numbers
       const validatedForecast = Array.isArray(forecastData) 
         ? forecastData.map(item => typeof item === 'object' ? item.aqi || item.value : item)
         : [];
 
-      console.log(`📊 Forecast Data:`, validatedForecast);
-      console.log(`📊 Current AQI: ${currentData.aqi}`);
-
-      // Prepare enhanced response that matches frontend expectations
       const response = {
         status: 'success',
         data: {
@@ -82,7 +85,6 @@ class AQIController {
             address: locationInfo.address
           },
           persona: persona,
-          // Match frontend structure - flatten current data
           current: {
             aqi: currentData.aqi,
             category: currentData.category,
@@ -90,19 +92,15 @@ class AQIController {
             pm10: currentData.pm10,
             source: currentData.source
           },
-          // Ensure forecast is array of numbers
           forecast: validatedForecast,
           advice: aiAdvice
         },
         timestamp: new Date().toISOString()
       };
 
-      console.log(`✅ Success: AQI data for ${locationInfo.name} (Current: ${currentData.aqi}, Forecast: ${validatedForecast.join(', ')})`);
       res.json(response);
 
     } catch (error) {
-      console.error('AQI Advice Controller Error:', error.message);
-      
       if (error.message.includes('Location not found') || error.message.includes('Failed to find location')) {
         return res.status(404).json({
           status: 'error',
@@ -131,7 +129,6 @@ class AQIController {
     }
   }
 
-  // New endpoint: Search location by name
   async searchLocation(req, res) {
     try {
       const { query } = req.body;
@@ -142,24 +139,23 @@ class AQIController {
           message: 'Search query is required'
         });
       }
-
-      console.log(`🔍 Searching location: ${query}`);
       
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
-      );
+      const searchResults = await locationService._makeRequest('search.php', {
+        q: query,
+        limit: 5,
+        addressdetails: 1
+      });
       
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const results = data.map(result => ({
+      if (searchResults && searchResults.length > 0) {
+        const results = searchResults.map(result => ({
           name: result.display_name,
           lat: parseFloat(result.lat),
           lon: parseFloat(result.lon),
           type: result.type,
-          importance: result.importance
+          importance: result.importance,
+          address: result.address
         }));
-
+        
         res.json({
           status: 'success',
           data: results,
@@ -173,15 +169,80 @@ class AQIController {
       }
 
     } catch (error) {
-      console.error('Location search error:', error);
+      if (error.message.includes('Location not found') || error.message.includes('No locations found')) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'No locations found for your search'
+        });
+      }
+
+      if (error.message.includes('API key')) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Location service configuration error'
+        });
+      }
+
       res.status(500).json({
         status: 'error',
-        message: 'Error searching for location'
+        message: 'Error searching for location: ' + error.message
       });
     }
   }
 
-  // Keep existing health check method
+  async searchLocationAdvanced(req, res) {
+    try {
+      const { query, country, type, limit = 5 } = req.body;
+
+      if (!query) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Search query is required'
+        });
+      }
+      
+      const params = {
+        q: query,
+        limit: Math.min(limit, 10),
+        addressdetails: 1
+      };
+
+      if (country) params.country = country;
+      if (type) params.type = type;
+
+      const searchResults = await locationService._makeRequest('search.php', params);
+      
+      if (searchResults && searchResults.length > 0) {
+        const results = searchResults.map(result => ({
+          name: result.display_name,
+          lat: parseFloat(result.lat),
+          lon: parseFloat(result.lon),
+          type: result.type,
+          importance: result.importance,
+          address: result.address,
+          boundingbox: result.boundingbox
+        }));
+        
+        res.json({
+          status: 'success',
+          data: results,
+          message: `Found ${results.length} locations`
+        });
+      } else {
+        res.status(404).json({
+          status: 'error',
+          message: 'No locations found for your search'
+        });
+      }
+
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: 'Error searching for location: ' + error.message
+      });
+    }
+  }
+
   async healthCheck(req, res) {
     try {
       await weatherService.getCurrentAQI(28.6139, 77.2090);
