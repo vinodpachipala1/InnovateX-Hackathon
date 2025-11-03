@@ -6,6 +6,7 @@ import PersonaSelector from "../components/PersonaSelector";
 import AIAdvice from "../components/AIAdvice";
 import ChartComponent from "../components/ChartComponent";
 import { AnimatePresence } from "framer-motion";
+import BaseURL from "../components/BaseURL";
 
 // Debounce hook
 const useDebounce = (callback, delay) => {
@@ -61,7 +62,7 @@ const Dashboard = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/search-location",
+        `${BaseURL}/api/search-location`,
         {
           method: "POST",
           headers: {
@@ -102,7 +103,7 @@ const Dashboard = () => {
     setSearchLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/search-location",
+        `${BaseURL}/api/search-location`,
         {
           method: "POST",
           headers: {
@@ -160,7 +161,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/aqi-advice", {
+      const response = await fetch(`${BaseURL}/api/aqi-advice`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
