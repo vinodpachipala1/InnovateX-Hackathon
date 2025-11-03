@@ -1,0 +1,317 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Deep Dark Theme Enhancements */
+@import 'leaflet/dist/leaflet.css';
+
+/* Base styles */
+body {
+  background: #000000;
+  color: #ffffff;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* FIXED: Better scrollbar that doesn't cause lag */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.4);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.4) rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced animations */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  33% { 
+    transform: translateY(-10px) rotate(1deg); 
+  }
+  66% { 
+    transform: translateY(5px) rotate(-1deg); 
+  }
+}
+
+@keyframes glow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(16, 185, 129, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1); 
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(16, 185, 129, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2); 
+  }
+}
+
+@keyframes shimmer {
+  0% { 
+    transform: translateX(-100%) skewX(-15deg); 
+  }
+  100% { 
+    transform: translateX(200%) skewX(-15deg); 
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.2); 
+  }
+}
+
+@keyframes shoot {
+  0% { 
+    transform: translateX(-100%) translateY(-100%) rotate(45deg); 
+    opacity: 0; 
+  }
+  10% { 
+    opacity: 1; 
+  }
+  20% { 
+    transform: translateX(100vw) translateY(100vh) rotate(45deg); 
+    opacity: 0; 
+  }
+  100% { 
+    opacity: 0; 
+  }
+}
+
+/* Animation classes */
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 4s infinite;
+}
+
+.animate-shoot {
+  animation: shoot 3s infinite;
+}
+
+/* Dark leaflet map */
+.leaflet-container {
+  background: #111827 !important;
+  border-radius: 1rem;
+  border: 1px solid #374151;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1f2937 !important;
+  color: white !important;
+  border-radius: 0.75rem;
+  border: 1px solid #374151;
+  backdrop-filter: blur(10px);
+}
+
+.leaflet-popup-tip {
+  background: #1f2937 !important;
+}
+
+/* Text selection */
+::selection {
+  background: rgba(16, 185, 129, 0.3);
+  color: white;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input,
+select {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Performance optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix for layout overflow issues */
+.layout-container {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Z-index system for proper layering */
+.bg-base {
+  z-index: -40;
+}
+
+.bg-stars {
+  z-index: -30;
+}
+
+.bg-grid {
+  z-index: -20;
+}
+
+.bg-glow {
+  z-index: -15;
+}
+
+.bg-orbs {
+  z-index: -10;
+}
+
+.bg-noise {
+  z-index: -5;
+}
+
+.content-layer {
+  z-index: 10;
+}
+
+/* Gradient background utilities */
+.bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
+}
+
+/* Backdrop blur support with fallback */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .backdrop-blur-lg {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  
+  .backdrop-blur-xl {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  
+  .backdrop-blur-sm {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Performance optimizations for animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .leaflet-container {
+    border-radius: 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .leaflet-container {
+    border: 2px solid #10b981;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #10b981;
+  }
+}
+
+/* Print styles */
+@media print {
+  .leaflet-container,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Loading state improvements */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Custom utilities for the starfield */
+.star {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Smooth scrolling for the whole app */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus within for better accessibility */
+.focus-group:focus-within {
+  outline: 2px solid rgba(16, 185, 129, 0.5);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Custom selection colors for different elements */
+.code-block::selection {
+  background: rgba(6, 182, 212, 0.3);
+}
+
+.important-text::selection {
+  background: rgba(139, 92, 246, 0.3);
+}
